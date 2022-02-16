@@ -5,7 +5,7 @@ Email : bhban@kakao.com
 
 import os
 import re
-import googletrans
+#import googletrans
 import pymacro as pc
 import time
 
@@ -22,14 +22,14 @@ def find_sentences_with_word(wordFile, resource_dir):
         "*", ":", "@", "/", "‘", "\\n"
     ]
 
-    new_dir_name = resource_dir + "_sentence_Extracted_Translated"
+    new_dir_name = resource_dir + "_sentence_Extracted_additional"
     if new_dir_name not in os.listdir():
         os.mkdir(new_dir_name)
 
-    translator = googletrans.Translator()
+    #translator = googletrans.Translator()
 
     for line in txt:
-        word = line.strip().split(",")[0]
+        word = line.strip()
         sentences = []
 
         for key in resources:
@@ -37,9 +37,28 @@ def find_sentences_with_word(wordFile, resource_dir):
             for el in db:
                 for bn in banList:
                     tmp_line = el.replace(bn, " ")
-                words_in_sentence = tmp_line.split(" ")
-                if word in words_in_sentence:
-                    sentences.append((el, key))
+                if "~" not in line:
+                    if word in tmp_line:
+                        sentences.append((el, key))
+                else:
+                    line_tokens = tmp_line.split(" ")
+                    word_tokens = line.split(" ")
+                    fine = True
+                    for w_token in word_tokens:
+                        if w_token == "~":
+                            line_tokens = line_tokens[1:]
+                            continue
+                        if w_token not in line_tokens:
+                            fine=False
+                            break
+                        if line_tokens.index(w_token) + 1 == len(line_tokens):
+                            fine=False
+                            break
+                        line_tokens = line_tokens[line_tokens.index(w_token) + 1:]
+
+                    if fine:
+                        sentences.append((el, key))
+
 
         if len(sentences) != 0:
             new_filename = new_dir_name + "/" + word + ".txt"
@@ -104,6 +123,8 @@ def sentence_extractor(resource_dir):
     resource = os.listdir(resource_dir)
     dct = {}
     for el in resource:
+        if not el.endswith(".txt"):
+            continue
         filename = resource_dir + "/" + el
         print("reading  > " + filename)
         file = open(filename, encoding="utf8")
@@ -175,9 +196,9 @@ def process(txt):
 
         if len(el) < 7:
             continue
-        elif len(el.split(" ")) < 5:
+        elif len(el.split(" ")) < 4:
             continue
-        elif len(el.split(" ")) > 21:
+        elif len(el.split(" ")) > 25:
             continue
         elif isKorean(el) != 0:
             continue
@@ -195,4 +216,4 @@ def isKorean(text):
 
 #dct = save_sentences("survived words.txt", "resource")
 
-find_sentences_with_word("survived words.txt", "resource")
+find_sentences_with_word("additional words.txt", "resource")
