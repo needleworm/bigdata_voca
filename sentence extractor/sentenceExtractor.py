@@ -38,7 +38,8 @@ def find_sentences_with_word(wordFile, resource_dir):
                 for bn in banList:
                     tmp_line = el.replace(bn, " ")
                 if "~" not in line:
-                    if word in tmp_line:
+                    tmp_token = tmp_line.split(" ")
+                    if word in tmp_token:
                         sentences.append((el, key))
                 else:
                     line_tokens = tmp_line.split(" ")
