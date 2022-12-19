@@ -33,7 +33,6 @@ for el in splt:
     splt_line = el.split("\n")
     idx, word, _ = splt_line[0].split("\t")
     idx = int(idx)
-    wds.append(word)
 
     meanings = []
     for line in splt_line:
@@ -50,7 +49,13 @@ for el in splt:
             sntnce = splt_line[i + 1].strip()
             hubos = data_dict[word]
             for wd in hubos:
-                if wd in sntnce:
+                sntnc = sntnce.replace(".", " ")
+                sntnc = sntnce.replace(",", " ")
+                sntnc = sntnce.replace("'", " ")
+                sntnc = sntnce.replace('"', " ")
+                sntnc = sntnce.replace("`", " ")
+                sntnc = sntnce.replace(":", " ")
+                if " " + wd + " " in sntnce:
                     appearance = wd
                     sentence = sntnce.split(" " + wd + " ")
                     break
